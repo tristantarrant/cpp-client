@@ -91,7 +91,7 @@ foreach(loop_var ${CMAKE_CONFIGURATION_TYPES})
 	set(JAVA_LIBRARY_PATH "${JAVA_LIBRARY_PATH}${CLASSPATH_SEPARATOR}${loop_var}")
 endforeach(loop_var)
 
-add_test(swig ${JAVA_RUNTIME} -ea "-Djava.library.path=${JAVA_LIBRARY_PATH}" -cp "jni/hotrod-jni.jar${CLASSPATH_SEPARATOR}jni/lib/*${CLASSPATH_SEPARATOR}jni${CLASSPATH_SEPARATOR}${CMAKE_CURRENT_SOURCE_DIR}/test/log4j.xml" JniTest)
+add_test(swig ${JAVA_RUNTIME} -ea "-Djava.library.path=${JAVA_LIBRARY_PATH}" -cp "jni/hotrod-jni.jar${CLASSPATH_SEPARATOR}jni/lib/*${CLASSPATH_SEPARATOR}jni${CLASSPATH_SEPARATOR}${CMAKE_CURRENT_SOURCE_DIR}/test" JniTest)
 
 install (FILES "${CMAKE_CURRENT_BINARY_DIR}/jni/hotrod-jni.jar" DESTINATION jni)
 install (TARGETS hotrod-swig LIBRARY DESTINATION jni)
