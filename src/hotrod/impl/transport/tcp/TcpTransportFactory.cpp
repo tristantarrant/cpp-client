@@ -29,7 +29,7 @@ void TcpTransportFactory::start(
     for (std::vector<ServerConfiguration>::const_iterator iter=configuration.getServersConfiguration().begin();
         iter!=configuration.getServersConfiguration().end(); iter++)
     {
-        DEBUG("Statically configured server: %s:%d", iter->getHost(), iter->getPort());
+        DEBUG("Statically configured server: %s:%d", iter->getHost().c_str(), iter->getPort());
         servers.push_back(InetSocketAddress(iter->getHost(), iter->getPort()));
     }
 
