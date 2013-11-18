@@ -6,6 +6,7 @@
 #include "hotrod/impl/protocol/Codec.h"
 #include "infinispan/hotrod/Configuration.h"
 #include "hotrod/impl/consistenthash/ConsistentHash.h"
+#include "hotrod/sys/Log.h"
 #include <algorithm>
 
 namespace infinispan {
@@ -28,6 +29,7 @@ void TcpTransportFactory::start(
     for (std::vector<ServerConfiguration>::const_iterator iter=configuration.getServersConfiguration().begin();
         iter!=configuration.getServersConfiguration().end(); iter++)
     {
+        DEBUG("Statically configured server: %s:%d", iter->getHost(), iter->getPort());
         servers.push_back(InetSocketAddress(iter->getHost(), iter->getPort()));
     }
 
@@ -37,6 +39,10 @@ void TcpTransportFactory::start(
     // TODO: SSL configuration
 
     transportFactory.reset(new TransportObjectFactory(codec, *this, configuration.isPingOnStartup()));
+
+    if (logger.isDebugEnabled()) {
+        DEBUG("Tcp no delay = %b; client socket timeout = %d ms; connect timeout = %d ms", configuration.isTcpNoDelay(), configuration.getSocketTimeout(), configuration.getConnectionTimeout());
+    }
 
     createAndPreparePool();
     balancer->setServers(servers);
