@@ -1,7 +1,6 @@
-
-
 #include "infinispan/hotrod/exceptions.h"
 #include "hotrod/sys/Socket.h"
+#include "hotrod/sys/Log.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -66,6 +65,7 @@ void throwIOErr (const std::string& host, int port, const char *msg, int errnum)
             m += strerror(errnum);
         }
     }
+    DEBUG("Error %s (%s:%d)", m.c_str(), host.c_str(), port);
     throw TransportException(host, port, m);
 }
 
@@ -181,7 +181,6 @@ size_t Socket::read(char *p, size_t length) {
             throwIOErr(host, port, "read", errno);
         else if (n == 0)
             throwIOErr(host, port, "no read", 0);
-            //return 0;
         else
             return n;
     }

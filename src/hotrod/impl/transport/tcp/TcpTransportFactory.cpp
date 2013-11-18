@@ -131,6 +131,7 @@ void TcpTransportFactory::pingServers() {
           // Ping's objective is to retrieve a potentially newer
           // version of the Hot Rod cluster topology, so ignore
           // exceptions from nodes that might not be up any more.
+          TRACE("Ignoring exception pinging configured server %s:%d to establish a connection", iter->getAddress().c_str(), iter->getPort());
        }
     }
 }
@@ -215,8 +216,7 @@ void TcpTransportFactory::updateHashFunction(
     ScopedLock<Mutex> l(lock);
     ConsistentHash* hash = hashFactory->newConsistentHash(hashFunctionVersion);
     if (hash == NULL) {
-        std::cout << "updateHashFunction with hash version "
-            << hashFunctionVersion << " failed!" << std::endl;
+        WARN("updateHashFunction with hash version %d failed!", hashFunctionVersion);
     } else {
         hash->init(servers2Hash, numKeyOwners, hashSpace);
     }
