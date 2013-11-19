@@ -117,6 +117,9 @@ void Socket::connect(const std::string& h, int p, int timeout) {
     int error = errno;
     freeaddrinfo(addr);
 
+    // Set to blocking mode again
+    fcntl(sock, F_SETFL, flags & ~O_NONBLOCK);
+
     if (s < 0) {
         if (error == EINPROGRESS) {
             pollfd fds[1];
@@ -141,8 +144,7 @@ void Socket::connect(const std::string& h, int p, int timeout) {
         throwIOErr(host, port, "Error during connection", error);
     }
 
-    // Set to blocking mode again
-    fcntl(sock, F_SETFL, flags & ~O_NONBLOCK);
+
     fd = sock;
 }
 
