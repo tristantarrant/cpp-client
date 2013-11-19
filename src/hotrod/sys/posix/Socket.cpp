@@ -2,11 +2,13 @@
 
 #include "infinispan/hotrod/exceptions.h"
 #include "hotrod/sys/Socket.h"
+#include "hotrod/sys/Log.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -91,6 +93,24 @@ void Socket::connect(const std::string& h, int p, int timeout) {
     ostr << port;
     int ec = getaddrinfo(host.c_str(), ostr.str().c_str(), NULL, &addr);
     if (ec) throwIOErr(host, port,"Error while invoking getaddrinfo", errno);
+
+    if (logger.isDebugEnabled()) {
+        char s[64];
+        void *a;
+        switch (addr->ai_family) {
+        case AF_INET:
+            a = &(((struct sockaddr_in *)addr->ai_addr)->sin_addr);
+            break;
+        case AF_INET6:
+            a = &(((struct sockaddr_in6 *)addr->ai_addr)->sin6_addr);
+            break;
+        default:
+            throwIOErr(host, port, "Unknown address family", errno);
+            break;
+        }
+        inet_ntop(addr->ai_family, a , s, 64);
+        DEBUG("getaddrinfo(host=%s:port=%d) => addrinfo(ai_family=%d, ai_addr=%s)", host.c_str(), port, addr->ai_family, s);
+    }
 
     int sock = socket(addr->ai_family, SOCK_STREAM, getprotobyname("tcp")->p_proto);
     if (sock == -1) throwIOErr(host, port,"connect", errno);
